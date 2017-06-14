@@ -1,5 +1,3 @@
-import matplotlib
-matplotlib.use("TkAgg")
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -11,15 +9,10 @@ import inspect
 fns = inspect.getmembers(rules, inspect.isfunction)
 fn_list = [fn[0] for fn in fns]
 n = 50
-p = 0.5 # probability value of placing 1
+p = 0.5 # prob
 time = 0
-states = [0,1] # grid states
+states = [0,1]
 default_grid = np.random.choice(states, n*n , p=[1-p,p]).reshape(n,n)
-
-def initp(val=p):
-    global p
-    p = val
-    return val
 
 def init():
     global grid, next_grid, time, rule
@@ -61,23 +54,29 @@ def init():
 
     next_grid = grid.copy()
     print('\nSimulating ' + usr_rule + '...')
-
+"""
 def draw():
     plt.cla()
     plt.pcolor(grid, vmin = 0, vmax = 1, cmap = plt.cm.binary)
     plt.axis('image')
     plt.title('t = ' + str(time))
     plt.show()
-
-def step():
+"""
+def step(data):
     global grid, next_grid, time, rule
     time += 1
     for x in range(n):
         for y in range(n):
             if not rule(x,y,grid) == None:
                 next_grid[x,y] = rule(x,y,grid)
-                #print(rule(x,y,grid))
     grid = next_grid.copy()
+    mat.set_data(next_grid)
+    return mat
 
-import pycxsimulator
-pycxsimulator.GUI(parameterSetters = [initp]).start(func=[init,draw,step]) 
+init()
+
+fig, ax = plt.subplots()
+mat = ax.matshow(grid)
+ani = animation.FuncAnimation(fig, step, interval=50,save_count=50)
+
+plt.show()
